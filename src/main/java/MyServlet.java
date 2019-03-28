@@ -11,56 +11,32 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-@WebServlet(urlPatterns = {"/add", "/delete", "/update", "/find", "/test", "/getItems"})
+@WebServlet(urlPatterns = {"/getItems", "/findById", "/add", "/update", "/delete"} )
 
 //(urlPatterns = "/add")
+///add", "/delete", "/update", "/find", "/test", "/getItems"}
 public class MyServlet extends HttpServlet {
     ItemController itemController = new ItemController();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        String action = req.getServletPath();
-
-        switch (action) {
-            case "/add":
-                addItem(req, resp);
-                break;
-
-            case "/delete":
-                delete(req, resp);
-                break;
-            case "/update":
-                updateItem(req, resp);
-                break;
-            case "/find":
-                find(req, resp);
-                break;
-            case "/test":
-                resp.getWriter().println(req.getParameter("param"));
-                break;
-            case "/getItems":
-                listItems(req, resp);
-                break;
-            default:
-                listItems(req, resp);
-        }
+         listItems(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //super.doPost(req, resp);
-        doGet(req, resp);
+        addItem(req, resp);
     }
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPut(req, resp);
+        updateItem(req, resp);
     }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doDelete(req, resp);
+        delete(req, resp);
     }
 
     @Override
