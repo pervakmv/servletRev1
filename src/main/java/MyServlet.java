@@ -1,17 +1,21 @@
 import controller.ItemController;
+import controller.JsonUtil;
 import model.Item;
+import org.apache.commons.io.IOUtils;
 
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.Date;
 import java.util.List;
 
-@WebServlet(urlPatterns = {"/getItems", "/findById", "/add", "/update", "/delete"} )
+@WebServlet(urlPatterns = {"/getItems", "/findById", "/add", "/update", "/delete"})
 
 //(urlPatterns = "/add")
 ///add", "/delete", "/update", "/find", "/test", "/getItems"}
@@ -20,8 +24,11 @@ public class MyServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-         listItems(req, resp);
+        //listItems(req, resp);
+        String strId = req.getParameter("id").trim();
+        long id = Long.parseLong(strId);
+        Item item = itemController.findById(id);
+        resp.getWriter().println(item);
     }
 
     @Override
@@ -70,15 +77,14 @@ public class MyServlet extends HttpServlet {
 
 
     private void addItem(HttpServletRequest req, HttpServletResponse resp) {
-        Item newItem = new Item();
-        String name = req.getParameter("name");
-        Date dateCreated = new Date();
-        String description = req.getParameter("description");
-        newItem.setName(name);
-        newItem.setDateCreated(dateCreated);
-        newItem.setLastUpdatedDate(dateCreated);
-        newItem.setDescription(description);
 
+        String str = new String();
+        try {
+            str = IOUtils.toString(req.getInputStream());
+        } catch (IOException e) {
+            System.out.println("Exception occured while servlet input stream reading" + e.getMessage());
+        }
+        Item newItem = JsonUtil.convertJsonToJava(str, Item.class);
         itemController.add(newItem);
     }
 
@@ -96,9 +102,8 @@ public class MyServlet extends HttpServlet {
         updateItem.setLastUpdatedDate(dateUpdated);
 
         String description = req.getParameter("description");
-        if (description != null) {
-            updateItem.setDescription(description);
-        }
+        updateItem.setDescription(description);
+
         itemController.update(updateItem);
     }
 

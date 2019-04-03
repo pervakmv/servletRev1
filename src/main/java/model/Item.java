@@ -1,12 +1,25 @@
 package model;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonPropertyOrder;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
+
+@JsonPropertyOrder(value = {
+        "id",
+        "name",
+        "dateCreated",
+        "lastUpdateDate",
+        "description"
+})
 
 @Entity(name = "Item")
 @Table(name = "Item")
-public class Item {
+public class Item implements Serializable {
 
+    @JsonIgnore
     private long id;
     private String name;
     private Date dateCreated;
