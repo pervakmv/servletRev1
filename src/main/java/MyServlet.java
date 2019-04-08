@@ -2,6 +2,9 @@ import controller.ItemController;
 import controller.JsonUtil;
 import model.Item;
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
 
 import javax.servlet.ServletException;
@@ -12,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Reader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +29,6 @@ public class MyServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //listItems(req, resp);
         String strId = req.getParameter("id").trim();
         long id = Long.parseLong(strId);
         Item item = itemController.findById(id);
@@ -33,7 +37,27 @@ public class MyServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        addItem(req, resp);
+        ObjectMapper objectMapper = new ObjectMapper();
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        objectMapper.setDateFormat(df);
+
+        String str = new String();
+        try {
+            str = IOUtils.toString(req.getInputStream());
+        } catch (IOException e) {
+            System.out.println("Exception occured while servlet input stream reading" + e.getMessage());
+        }
+        try {
+            Item newItem = objectMapper.readValue(str, Item.class);
+            itemController.add(newItem);
+
+        } catch (JsonParseException e) {
+            System.out.println("Exception Occured whiile converting the Json into java" + e.getMessage());
+        } catch (JsonMappingException e) {
+            System.out.println("Exception Occured whiile converting the Json into java" + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("Exception Occured whiile converting the Json into java" + e.getMessage());
+        }
     }
 
     @Override

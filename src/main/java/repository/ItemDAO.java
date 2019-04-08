@@ -42,8 +42,6 @@ public class ItemDAO implements DAO<Item> {
             System.err.println("Save hotel is failed");
             System.err.println(e.getMessage());
             item = null;
-            if (tr != null)
-                tr.rollback();
         } finally {
             if (session != null)
                 session.close();
